@@ -32,7 +32,10 @@ const LOOKBACK_BARS = 18;
 const MOMENTUM_TOP_N = 2;
 const MAX_SLIPPAGE_BPS = 150;
 const MIN_MOMENTUM_BPS = 5;
+const MAX_MOMENTUM_BPS = 2_000;
 const REBALANCE_INTERVAL = LOOKBACK_BARS;
+const MIN_CASH_BUFFER_BPS = 250;
+const MAX_ENTRY_NOTIONAL_BPS = 9_000;
 
 function hasEnoughHistory(closes: (bigint | null)[], seq: number): boolean {
   return seq >= LOOKBACK_BARS && closes[seq] !== null && closes[seq - LOOKBACK_BARS] !== null;
@@ -40,6 +43,11 @@ function hasEnoughHistory(closes: (bigint | null)[], seq: number): boolean {
 
 function returnBps(now: bigint, then: bigint): bigint {
   return ((now - then) * 10_000n) / then;
+}
+
+function eligibleMomentum(now: bigint, then: bigint): boolean {
+  const change = returnBps(now, then);
+  return change >= BigInt(MIN_MOMENTUM_BPS) && change <= BigInt(MAX_MOMENTUM_BPS);
 }
 
 /** Each universe symbol's latest close as of every batch so far (null before its first bar), by seq. */
@@ -59,7 +67,7 @@ function target(state: BarsState, seq: number): string[] {
     const closes = history.get(symbol)!;
     const now = closes[seq];
     const then = closes[seq - LOOKBACK_BARS];
-    if (now !== null && now !== undefined && then !== null && then !== undefined && returnBps(now, then) >= BigInt(MIN_MOMENTUM_BPS)) ranked.push({ symbol, now, then });
+    if (now !== null && now !== undefined && then !== null && then !== undefined && eligibleMomentum(now, then)) ranked.push({ symbol, now, then });
   }
   // now_a / then_a > now_b / then_b, exactly; Array.prototype.sort is stable, so ties keep universe order.
   ranked.sort((a, b) => {
@@ -75,9 +83,13 @@ function buys(state: BarsState, symbols: readonly string[]): BuyInput[] {
   const room = slots(state) - state.positions.size;
   const coming = symbols.filter((s) => !state.positions.has(s) && state.close(s) !== null).slice(0, room > 0 ? room : 0);
   if (coming.length === 0) return [];
-  const even = state.cash / BigInt(coming.length);
+  const reserve = (state.equity * BigInt(MIN_CASH_BUFFER_BPS)) / BPS;
+  const investable = state.cash > reserve ? state.cash - reserve : 0n;
+  const even = investable / BigInt(coming.length);
   const byWeight = (BigInt(caps.max_weight_bps) * state.equity) / BPS;
-  const slice = even < byWeight ? even : byWeight;
+  const byEntryLimit = (BigInt(MAX_ENTRY_NOTIONAL_BPS) * state.equity) / BPS;
+  const weightLimited = even < byWeight ? even : byWeight;
+  const slice = weightLimited < byEntryLimit ? weightLimited : byEntryLimit;
   if (slice === 0n || slice < BigInt(fees.min_notional_quote_units)) return [];
   return coming.map((symbol) => ({ side: 'buy', symbol, notional_quote_units: slice, max_slippage_bps: MAX_SLIPPAGE_BPS }));
 }
