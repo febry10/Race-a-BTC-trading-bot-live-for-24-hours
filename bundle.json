@@ -1,0 +1,211 @@
+{
+  "out": "/home/blacklotus/btc-race-entry/transcript.tar.gz",
+  "manifest": {
+    "format": "agent-fun/transcript-bundle/v1",
+    "created_at": "2026-11-17T08:21:48.611Z",
+    "tool": {
+      "name": "makefun-cli",
+      "version": "0.1.0+kit.19",
+      "client": {
+        "harness": "hermes-agent",
+        "markers": [
+          "HERMES_AGENT"
+        ],
+        "os": "linux x64",
+        "node": "v25.9.0",
+        "build": "f06bdb1dfc68",
+        "ci": false,
+        "tty": false
+      }
+    },
+    "repo": {
+      "remote_url": "https://github.com/febry10/Race-a-BTC-trading-bot-live-for-24-hours.git",
+      "commit": "804b33102796031ccf37e25fdfe252b6a36c5a1f",
+      "dirty": true
+    },
+    "sessions": [
+      {
+        "path": "sessions/hermes/state.db",
+        "source": "hermes",
+        "sha256": "515fc710efaf7157b03b149f9b03e579b516ec7fab507a3fbc582d24c4cc6980",
+        "bytes": 1003520,
+        "session_id": "local-0f9c46fdb7842ea45c56a34be2c25ef2be31e2cfc7676e1b9ce1a4701ccb68fe",
+        "parent_session_id": null,
+        "agent_id": null,
+        "original_path": "~/.hermes/state.db",
+        "collected_by": "explicit",
+        "first_at": "2026-11-17T07:01:43.205Z",
+        "last_at": "2026-11-17T08:21:32.136Z"
+      }
+    ],
+    "excluded_turns": [],
+    "declared": {
+      "harness": "hermes",
+      "harness_version": "1",
+      "model": "hermes-combo",
+      "provider": "openai",
+      "reasoning_effort": "default",
+      "notes": "Authored, revised, graded, and verified repository build"
+    },
+    "context": [
+      {
+        "path": "context/user/hermes/SOUL.md",
+        "kind": "instructions",
+        "scope": "user",
+        "harness": "hermes",
+        "sha256": "36c1f5a2e92cd1d018311eaf4c8f1e8886672eae78212e033c681d0e3d5d506f",
+        "bytes": 667,
+        "original_path": "~/.hermes/SOUL.md",
+        "collected_by": "discovered"
+      },
+      {
+        "path": "context/user/hermes/config.yaml",
+        "kind": "settings",
+        "scope": "user",
+        "harness": "hermes",
+        "sha256": "1b9640c6444c58fae7c44f59506c8122199c14e25dbf0a0f22916b85cd61dfe5",
+        "bytes": 127341,
+        "original_path": "~/.hermes/config.yaml",
+        "collected_by": "discovered"
+      }
+    ],
+    "collection": {
+      "explicit": 1,
+      "discovered": 0,
+      "family": 0,
+      "unmatched": 0,
+      "vanished_cwds": 0,
+      "context_files": 2,
+      "warnings": [
+        "Hermes Agent store ~/.hermes/state.db, named with --session: cut to the session(s) named with --session-id (local-0f9c46fdb7842ea45c56a34be2c25ef2be31e2cfc7676e1b9ce1a4701ccb68fe) and their families: 1 of its 200 session(s) bundled, 199 left out",
+        "~/btc-race-entry has uncommitted changes (recorded as repo.dirty)"
+      ]
+    },
+    "run": {
+      "format": "makefun-run/1",
+      "prompt": {
+        "text": "Read make.fun/skill.md and enter the bounty \"Race a BTC trading bot live for 24 hours\" (make.fun/bounty/btc-race-24h-20261117-0603) as my make.fun account @febri-yudila: connect to it first (makefun login, then send me the approval link).",
+        "origin": "typed",
+        "via": null
+      },
+      "system_prompt": {
+        "status": "in-session",
+        "why": null
+      },
+      "instructions": {
+        "status": "withheld",
+        "why": "system"
+      },
+      "mcp_servers": []
+    }
+  },
+  "sessions": [
+    {
+      "path": "sessions/hermes/state.db",
+      "file": "/home/blacklotus/.hermes/state.db",
+      "source": "hermes",
+      "collected_by": "explicit",
+      "bytes": 1003520,
+      "kept_lines": null,
+      "dropped_lines": null,
+      "sessions": 1,
+      "turns": 90
+    }
+  ],
+  "context": [
+    {
+      "path": "context/user/hermes/SOUL.md",
+      "file": "/home/blacklotus/.hermes/SOUL.md",
+      "kind": "instructions",
+      "scope": "user",
+      "harness": "hermes",
+      "bytes": 667
+    },
+    {
+      "path": "context/user/hermes/config.yaml",
+      "file": "/home/blacklotus/.hermes/config.yaml",
+      "kind": "settings",
+      "scope": "user",
+      "harness": "hermes",
+      "bytes": 127341
+    }
+  ],
+  "coverage": {
+    "sessions": 1,
+    "roots": 1,
+    "subagents": 0,
+    "parents_missing": 0,
+    "subagents_missing": 0,
+    "with_system_prompt": 1,
+    "context_files": 2,
+    "harnesses": [
+      {
+        "name": "hermes-agent",
+        "version": null,
+        "sessions": 1
+      }
+    ],
+    "notes": []
+  },
+  "redactions": {
+    "privacy": {
+      "email": 2,
+      "home-path": 642,
+      "username": 3
+    },
+    "secrets": {
+      "claim-code": 2,
+      "generic-secret": 1,
+      "makefun-api-key": 1,
+      "setting": 4
+    },
+    "unmatched_terms": []
+  },
+  "unmatched": 0,
+  "vanished_cwds": [],
+  "bundle_sha256": "55f0909028fb5a7b29098d2940c83263210ee07d09e576a7016e240a8b302436",
+  "bundle_bytes": 286233,
+  "warnings": [
+    "Hermes Agent store /home/blacklotus/.hermes/state.db, named with --session: cut to the session(s) named with --session-id (local-0f9c46fdb7842ea45c56a34be2c25ef2be31e2cfc7676e1b9ce1a4701ccb68fe) and their families: 1 of its 200 session(s) bundled, 199 left out",
+    "/home/blacklotus/btc-race-entry has uncommitted changes (recorded as repo.dirty)"
+  ],
+  "run": {
+    "record": {
+      "format": "makefun-run/1",
+      "prompt": {
+        "text": "Read make.fun/skill.md and enter the bounty \"Race a BTC trading bot live for 24 hours\" (make.fun/bounty/btc-race-24h-20261117-0603) as my make.fun account @febri-yudila: connect to it first (makefun login, then send me the approval link).",
+        "origin": "typed",
+        "via": null
+      },
+      "system_prompt": {
+        "status": "in-session",
+        "why": null
+      },
+      "instructions": {
+        "status": "withheld",
+        "why": "system"
+      },
+      "mcp_servers": []
+    },
+    "prompt": {
+      "text": "Read make.fun/skill.md and enter the bounty \"Race a BTC trading bot live for 24 hours\" (make.fun/bounty/btc-race-24h-20261117-0603) as my make.fun account @febri-yudila: connect to it first (makefun login, then send me the approval link).",
+      "origin": "typed",
+      "via": null
+    },
+    "prompt_from": "sessions/hermes/state.db",
+    "system_prompt": {
+      "status": "in-session",
+      "why": null
+    },
+    "instructions": {
+      "status": "withheld",
+      "why": "system"
+    },
+    "instruction_files": 2,
+    "instructions_auto": false,
+    "mcp_servers": [],
+    "mcp_used": [],
+    "missing": [],
+    "enforced": true
+  }
+}
