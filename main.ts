@@ -38,17 +38,19 @@ import { BPS, runBars, type Bar, type BarsState, type BuyInput, type SellInput }
 const RSI_BARS = 14;
 const BAND_BARS = 20;
 const BAND_SIGMAS = 2;
-const RSI_ENTRY_BELOW = 30;
-const RSI_EXIT_ABOVE = 70;
+const RSI_ENTRY_BELOW = 34;
+const RSI_EXIT_ABOVE = 66;
 /** minimal_roi {"0": 0.1}: worth 11/10 of its cost. */
 const ROI = [11n, 10n] as const;
 /** stoploss -0.25: worth 3/4 of its cost. */
 const STOP = [3n, 4n] as const;
-const MAX_SLIPPAGE_BPS = 100;
+const MAX_SLIPPAGE_BPS = 140;
+const TREND_BARS = 6;
 
 interface Series {
   /** The last BAND_BARS typical prices, oldest first. */
   typical: number[];
+  closes: number[];
   last: number | null;
   /** The first RSI_BARS changes, while the averages are not set yet. */
   first: number[];
@@ -60,9 +62,11 @@ const series = new Map<string, Series>();
 
 function push(bar: Bar): void {
   let s = series.get(bar.symbol);
-  if (s === undefined) series.set(bar.symbol, (s = { typical: [], last: null, first: [], gain: null, loss: null }));
+  if (s === undefined) series.set(bar.symbol, (s = { typical: [], closes: [], last: null, first: [], gain: null, loss: null }));
   const c = Number(bar.c);
   s.typical.push((Number(bar.h) + Number(bar.l) + c) / 3);
+  s.closes.push(c);
+  if (s.closes.length > TREND_BARS + 1) s.closes.shift();
   if (s.typical.length > BAND_BARS) s.typical.shift();
   if (s.last !== null) {
     const change = c - s.last;
@@ -120,7 +124,8 @@ await runBars({
         continue;
       }
       const lower = lowerBand(s);
-      if (r !== null && lower !== null && r < RSI_ENTRY_BELOW && s.last! < lower) entries.push(symbol);
+      const trendDown = s.closes.length >= TREND_BARS + 1 && s.last! < s.closes[0];
+      if (r !== null && lower !== null && r < RSI_ENTRY_BELOW && s.last! < lower && !trendDown) entries.push(symbol);
     }
 
     const orders: (SellInput | BuyInput)[] = sells.slice(0, caps.max_orders_per_bar);
