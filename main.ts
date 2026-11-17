@@ -31,6 +31,16 @@ const LOOKBACK_BARS = 18;
 /** The most symbols it holds: fewer than half the universe (7 in solana-bars-1h-01), so it rotates. */
 const MOMENTUM_TOP_N = 2;
 const MAX_SLIPPAGE_BPS = 150;
+const MIN_MOMENTUM_BPS = 5;
+const REBALANCE_INTERVAL = LOOKBACK_BARS;
+
+function hasEnoughHistory(closes: (bigint | null)[], seq: number): boolean {
+  return seq >= LOOKBACK_BARS && closes[seq] !== null && closes[seq - LOOKBACK_BARS] !== null;
+}
+
+function returnBps(now: bigint, then: bigint): bigint {
+  return ((now - then) * 10_000n) / then;
+}
 
 /** Each universe symbol's latest close as of every batch so far (null before its first bar), by seq. */
 const history = new Map<string, (bigint | null)[]>();
@@ -49,7 +59,7 @@ function target(state: BarsState, seq: number): string[] {
     const closes = history.get(symbol)!;
     const now = closes[seq];
     const then = closes[seq - LOOKBACK_BARS];
-    if (now !== null && now !== undefined && then !== null && then !== undefined) ranked.push({ symbol, now, then });
+    if (now !== null && now !== undefined && then !== null && then !== undefined && returnBps(now, then) >= BigInt(MIN_MOMENTUM_BPS)) ranked.push({ symbol, now, then });
   }
   // now_a / then_a > now_b / then_b, exactly; Array.prototype.sort is stable, so ties keep universe order.
   ranked.sort((a, b) => {
@@ -87,7 +97,7 @@ await runBars({
       entering = null;
       return orders;
     }
-    if (batch.seq < nextRebalance) return [];
+    if (batch.seq < nextRebalance || ![...history.values()].some((closes) => hasEnoughHistory(closes, batch.seq))) return [];
     nextRebalance = batch.seq + LOOKBACK_BARS;
     const want = target(state, batch.seq);
     const sells: OrderInput[] = [...state.positions]
