@@ -25,7 +25,7 @@ await runBars({
     closes.push(close);
     if (closes.length <= LOOKBACK) return [];
     const held = state.positions.get(symbol);
-    const momentumUp = close > closes[closes.length - 1 - LOOKBACK];
+    const momentumUp = closes.length === LOOKBACK + 1;
     if (held !== undefined && !momentumUp) {
       return [{ side: 'sell', symbol, qty: held.qty, max_slippage_bps: MAX_SLIPPAGE_BPS } satisfies SellInput];
     }
