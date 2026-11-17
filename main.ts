@@ -50,6 +50,18 @@ function eligibleMomentum(now: bigint, then: bigint): boolean {
   return change >= BigInt(MIN_MOMENTUM_BPS) && change <= BigInt(MAX_MOMENTUM_BPS);
 }
 
+function rankMomentum(now: bigint, then: bigint): bigint {
+  return returnBps(now, then);
+}
+
+function hasTradableClose(state: BarsState, symbol: string): boolean {
+  return state.close(symbol) !== null && state.close(symbol)! > 0n;
+}
+
+function positionSymbols(state: BarsState): Set<string> {
+  return new Set([...state.positions.keys()]);
+}
+
 /** Each universe symbol's latest close as of every batch so far (null before its first bar), by seq. */
 const history = new Map<string, (bigint | null)[]>();
 /** The next rebalance bar; set from hello: max(LOOKBACK_BARS, the warm-up's batches). */
@@ -73,7 +85,9 @@ function target(state: BarsState, seq: number): string[] {
   ranked.sort((a, b) => {
     const l = a.now * b.then;
     const r = b.now * a.then;
-    return l > r ? -1 : l < r ? 1 : 0;
+    const momentumA = rankMomentum(a.now, a.then);
+    const momentumB = rankMomentum(b.now, b.then);
+    return momentumA > momentumB ? -1 : momentumA < momentumB ? 1 : l > r ? -1 : l < r ? 1 : 0;
   });
   return ranked.slice(0, slots(state)).map((x) => x.symbol);
 }
@@ -81,7 +95,8 @@ function target(state: BarsState, seq: number): string[] {
 function buys(state: BarsState, symbols: readonly string[]): BuyInput[] {
   const { caps, fees } = state.hello;
   const room = slots(state) - state.positions.size;
-  const coming = symbols.filter((s) => !state.positions.has(s) && state.close(s) !== null).slice(0, room > 0 ? room : 0);
+  const held = positionSymbols(state);
+  const coming = symbols.filter((s) => !held.has(s) && hasTradableClose(state, s)).slice(0, room > 0 ? room : 0);
   if (coming.length === 0) return [];
   const reserve = (state.equity * BigInt(MIN_CASH_BUFFER_BPS)) / BPS;
   const investable = state.cash > reserve ? state.cash - reserve : 0n;
