@@ -124,8 +124,7 @@ await runBars({
         continue;
       }
       const lower = lowerBand(s);
-      const trendDown = s.closes.length >= TREND_BARS + 1 && s.last! < s.closes[0];
-      if (r !== null && lower !== null && r < RSI_ENTRY_BELOW && s.last! < lower && !trendDown) entries.push(symbol);
+      if (r !== null && lower !== null && r < RSI_ENTRY_BELOW && s.last! < lower) entries.push(symbol);
     }
 
     const orders: (SellInput | BuyInput)[] = sells.slice(0, caps.max_orders_per_bar);
